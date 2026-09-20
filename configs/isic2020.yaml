@@ -1,0 +1,16 @@
+# ISIC 2020 configuration override
+# Usage: python train.py --config configs/isic2020.yaml
+
+project:
+  name: "Skin Cancer Detection - ISIC 2020"
+  seed: 42
+
+data:
+  dataset_name: "isic2020"
+  class_names:
+    - "nv"
+    - "mel"
+  num_classes: 2
+
+download:
+  auto_download: false

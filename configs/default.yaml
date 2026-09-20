@@ -1,0 +1,136 @@
+# Default configuration for Skin Cancer Detection System
+
+project:
+  name: "Explainable Hybrid Deep Learning Framework for Early Skin Cancer Detection"
+  seed: 42
+  output_dir: "outputs"
+  checkpoint_dir: "checkpoints"
+  log_dir: "logs"
+
+data:
+  dataset_name: "ham10000"  # ham10000, isic2019, isic2020
+  dataset_root: "dataset"
+  metadata_dir: "metadata"
+  image_size: [224, 224]
+  batch_size: 16
+  validation_split: 0.15
+  test_split: 0.15
+  num_workers: 4
+  class_names:
+    - "akiec"
+    - "bcc"
+    - "bkl"
+    - "df"
+    - "mel"
+    - "nv"
+    - "vasc"
+  num_classes: 7
+
+preprocessing:
+  apply_hair_removal: true
+  apply_clahe: true
+  clahe_clip_limit: 2.0
+  clahe_tile_grid_size: [8, 8]
+  apply_denoising: true
+  denoise_h: 10
+  denoise_template_window_size: 7
+  denoise_search_window_size: 21
+  normalization: "imagenet"  # imagenet, minmax, zscore
+
+augmentation:
+  enabled: true
+  rotation_limit: 30
+  horizontal_flip: true
+  vertical_flip: true
+  zoom_limit: 0.2
+  brightness_limit: 0.2
+  contrast_limit: 0.2
+
+segmentation:
+  enabled: true
+  input_size: [256, 256]
+  filters: [64, 128, 256, 512]
+  dropout: 0.3
+  epochs: 50
+  learning_rate: 0.0001
+  batch_size: 8
+  checkpoint_name: "unet_best.keras"
+
+classification:
+  backbone: "efficientnetv2-b0"
+  input_size: [224, 224]
+  freeze_base: true
+  fine_tune_at: 100
+  metadata_dim: 32
+  dropout: 0.4
+  epochs: 100
+  learning_rate: 0.0001
+  fine_tune_learning_rate: 0.00001
+  batch_size: 16
+  attention_type: "cbam"  # cbam, se, none
+  checkpoint_name: "classifier_best.keras"
+
+metadata:
+  age_min: 0
+  age_max: 100
+  gender_classes: ["male", "female", "unknown"]
+  location_classes:
+    - "abdomen"
+    - "acral"
+    - "back"
+    - "chest"
+    - "ear"
+    - "face"
+    - "foot"
+    - "forearm"
+    - "hand"
+    - "lower extremity"
+    - "neck"
+    - "scalp"
+    - "trunk"
+    - "upper extremity"
+    - "unknown"
+
+training:
+  loss: "categorical_crossentropy"  # categorical_crossentropy, focal
+  focal_gamma: 2.0
+  focal_alpha: 0.25
+  optimizer: "adam"  # adam, adamw
+  weight_decay: 0.0001
+  mixed_precision: true
+  early_stopping_patience: 15
+  reduce_lr_patience: 5
+  reduce_lr_factor: 0.5
+  min_lr: 0.0000001
+  resume: true
+
+evaluation:
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1
+    - specificity
+    - sensitivity
+    - auc
+  save_plots: true
+  save_gradcam: true
+  gradcam_layer: "top_conv"
+
+cross_validation:
+  enabled: false
+  n_folds: 5
+
+hyperparameter_tuning:
+  enabled: false
+  n_trials: 20
+  study_name: "skin_cancer_optuna"
+
+export:
+  save_h5: true
+  save_onnx: true
+  save_tflite: true
+
+download:
+  auto_download: false
+  kaggle_dataset: "kmader/skin-cancer-mnist-ham10000"
